@@ -7,7 +7,7 @@
 # Author:       Sergey Shafranskiy <sergey.shafranskiy@gmail.com>
 #
 # Version:      1.0.0
-# Build:        27
+# Build:        28
 # Created:      2018-12-01
 #  ----------------------------------------------------------------------------
 
@@ -40,11 +40,11 @@ class MainFrame(setvers_gui.GUIFrame):
         self.path = path
         self.SetTitle(self.path)
         self.fn_vers = os.path.join(self.path, '.vers')
-        print(self.fn_vers)
+        #print(self.fn_vers)
 
         self.fpy = [os.path.abspath(os.path.join(self.path, fn)) for fn in os.listdir(self.path)
                     if os.path.isfile(os.path.join(self.path, fn)) and (os.path.splitext(fn)[1] == '.py')]
-        print(self.fpy)
+        #print(self.fpy)
 
         self.st_Status.SetLabel('{} .py file(s) found in {}'.format(len(self.fpy), self.path))
 
