@@ -7,7 +7,7 @@
 # Author:       Sergey Shafranskiy <sergey.shafranskiy@gmail.com>
 #
 # Version:      1.1.0
-# Build:        39
+# Build:        40
 # Created:      2018-12-02
 #  ----------------------------------------------------------------------------
 
@@ -26,6 +26,12 @@ CFG_OPT_AUTHOR = 'Author'
 CFG_OPT_VERSION = 'Version'
 CFG_OPT_BUILD = 'Build'
 CFG_OPT_CREATED = 'Created'
+
+# Initial values
+
+CFG_DEF_AUTHOR = 'Specify author name, E-Mail'
+CFG_DEF_VERSION = '1.0.0'
+CFG_DEF_BUILD = '1'
 
 # .ini file constants
 
@@ -100,7 +106,8 @@ class MainFrame(setvers_gui.GUIFrame):
 
     def read_vers(self, path):
         """
-        # Read version info from .vers file from project directory
+        # Read version info from .vers file in current directory
+
         :param path: Project directory with .vers file
         :return:
         """
@@ -118,9 +125,9 @@ class MainFrame(setvers_gui.GUIFrame):
         if not os.path.exists(self.pfname_vers):
             # create new .vers file
             self.ver_cfg.add_section(CFG_SEC_CURVERS)
-            self.ver_cfg.set(CFG_SEC_CURVERS, CFG_OPT_AUTHOR, 'Specify author name, E-Mail')
-            self.ver_cfg.set(CFG_SEC_CURVERS, CFG_OPT_VERSION, '1.0.0')
-            self.ver_cfg.set(CFG_SEC_CURVERS, CFG_OPT_BUILD, '1')
+            self.ver_cfg.set(CFG_SEC_CURVERS, CFG_OPT_AUTHOR, CFG_DEF_AUTHOR)
+            self.ver_cfg.set(CFG_SEC_CURVERS, CFG_OPT_VERSION, CFG_DEF_VERSION)
+            self.ver_cfg.set(CFG_SEC_CURVERS, CFG_OPT_BUILD, CFG_DEF_BUILD)
             self.ver_cfg.set(CFG_SEC_CURVERS, CFG_OPT_CREATED, dt.now().strftime('%Y-%m-%d'))
 
             with open(self.pfname_vers, 'w') as cf:
@@ -128,25 +135,22 @@ class MainFrame(setvers_gui.GUIFrame):
         else:
             self.ver_cfg.read(self.pfname_vers)
 
-        try:
-            author = self.ver_cfg.get(CFG_SEC_CURVERS, CFG_OPT_AUTHOR)
-            vers = self.ver_cfg.get(CFG_SEC_CURVERS, CFG_OPT_VERSION)
-            build = self.ver_cfg.get(CFG_SEC_CURVERS, CFG_OPT_BUILD)
-            created = self.ver_cfg.get(CFG_SEC_CURVERS, CFG_OPT_CREATED)
+        author = self.ver_cfg.get(CFG_SEC_CURVERS, CFG_OPT_AUTHOR, fallback=CFG_DEF_AUTHOR)
+        vers = self.ver_cfg.get(CFG_SEC_CURVERS, CFG_OPT_VERSION, fallback=CFG_DEF_VERSION)
+        build = self.ver_cfg.get(CFG_SEC_CURVERS, CFG_OPT_BUILD, fallback=CFG_DEF_BUILD)
+        created = self.ver_cfg.get(CFG_SEC_CURVERS, CFG_OPT_CREATED, fallback=dt.now().strftime('%Y-%m-%d'))
 
-            vers_new = vers
-            build_new = str(int(build) + 1)
-            created_new = dt.now().strftime('%Y-%m-%d')
+        vers_new = vers
+        build_new = str(int(build) + 1)
+        created_new = dt.now().strftime('%Y-%m-%d')
 
-            self.et_Author.SetValue(author)
-            self.et_Version.SetValue(vers_new)
-            self.st_VersionPrev.SetLabel(vers)
-            self.et_Build.SetValue(build_new)
-            self.st_BuildPrev.SetLabel(build)
-            self.et_Created.SetValue(created_new)
-            self.st_CreatedPrev.SetLabel(created)
-        except Exception as ex:
-            pass
+        self.et_Author.SetValue(author)
+        self.et_Version.SetValue(vers_new)
+        self.st_VersionPrev.SetLabel(vers)
+        self.et_Build.SetValue(build_new)
+        self.st_BuildPrev.SetLabel(build)
+        self.et_Created.SetValue(created_new)
+        self.st_CreatedPrev.SetLabel(created)
 
         self.pc = []
         self.pc.append(re.compile(r'(^# Name:\s+)(.*?$)', flags=re.MULTILINE | re.S))
@@ -157,6 +161,11 @@ class MainFrame(setvers_gui.GUIFrame):
         return
 
     def save_vers(self):
+        """
+        Save version info to .vers file in current directory
+
+        :return:
+        """
         if self.pfname_vers is not None:
             self.ver_cfg.set(CFG_SEC_CURVERS, CFG_OPT_VERSION, self.et_Version.GetValue())
             self.ver_cfg.set(CFG_SEC_CURVERS, CFG_OPT_BUILD, self.et_Build.GetValue())
@@ -166,6 +175,12 @@ class MainFrame(setvers_gui.GUIFrame):
         return
 
     def ch_Directory_OnChoice(self, event):
+        """
+        Select directory in choice list
+
+        :param event:
+        :return:
+        """
         index = self.ch_Directory.GetSelection()
         if index != 0:
             value = self.ch_Directory.GetString(index)
@@ -177,7 +192,7 @@ class MainFrame(setvers_gui.GUIFrame):
 
     def bt_SelectDir_OnClick(self, event):
         """
-        Set project directory
+        Select new project directory
 
         :param event:
         :return:
@@ -187,12 +202,14 @@ class MainFrame(setvers_gui.GUIFrame):
             if dlg.ShowModal() == wx.ID_OK:
                 value = dlg.GetPath()
 
+                # Check if directory already in choice list
                 index = -1
                 for i in range(self.ch_Directory.GetCount()):
                     if self.ch_Directory.GetString(i) == value:
                         index = i
                         break
                 if index == -1:
+                    # Add directory to choice list
                     index = 0
                     self.ch_Directory.Insert(value, 0)
 
@@ -228,7 +245,7 @@ class MainFrame(setvers_gui.GUIFrame):
 
     def update_py_files(self, vals: list):
         """
-        Replace values in all files
+        Replace version info in all .py files
 
         :param vals: Values to replace
         :return:
@@ -260,6 +277,12 @@ class MainFrame(setvers_gui.GUIFrame):
         return
 
     def bt_IncVersion_OnClick(self, event):
+        """
+        Increment last number in version
+
+        :param event:
+        :return:
+        """
         vers = self.et_Version.GetValue()
         vs = vers.rsplit(".", 1)
         vers_new = vs[0] + '.' + str(int(vs[1]) + 1)
