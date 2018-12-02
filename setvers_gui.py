@@ -17,119 +17,136 @@ import wx.xrc
 class GUIFrame ( wx.Frame ):
 	
 	def __init__( self, parent ):
-		wx.Frame.__init__ ( self, parent, id = wx.ID_ANY, title = u"Version Info", pos = wx.DefaultPosition, size = wx.Size( 671,276 ), style = wx.DEFAULT_FRAME_STYLE|wx.TAB_TRAVERSAL )
+		wx.Frame.__init__ ( self, parent, id = wx.ID_ANY, title = u"Version Info", pos = wx.DefaultPosition, size = wx.Size( 753,324 ), style = wx.DEFAULT_FRAME_STYLE|wx.TAB_TRAVERSAL )
 		
 		self.SetSizeHints( wx.DefaultSize, wx.DefaultSize )
 		
-		bSizer7 = wx.BoxSizer( wx.VERTICAL )
+		sz_Main = wx.BoxSizer( wx.VERTICAL )
 		
-		self.m_panel3 = wx.Panel( self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL )
-		bSizer3 = wx.BoxSizer( wx.HORIZONTAL )
+		self.pn_Directory = wx.Panel( self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL )
+		sz_Directory = wx.BoxSizer( wx.HORIZONTAL )
 		
-		self.st_Directory = wx.StaticText( self.m_panel3, wx.ID_ANY, u"Project Directory:", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.st_Directory = wx.StaticText( self.pn_Directory, wx.ID_ANY, u"Project Directory:", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.st_Directory.Wrap( -1 )
 		
-		bSizer3.Add( self.st_Directory, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALL, 10 )
+		sz_Directory.Add( self.st_Directory, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALL|wx.LEFT, 10 )
 		
 		ch_DirectoryChoices = []
-		self.ch_Directory = wx.Choice( self.m_panel3, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, ch_DirectoryChoices, 0 )
+		self.ch_Directory = wx.Choice( self.pn_Directory, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, ch_DirectoryChoices, 0 )
 		self.ch_Directory.SetSelection( 0 )
-		bSizer3.Add( self.ch_Directory, 1, wx.ALIGN_CENTER_VERTICAL|wx.ALIGN_LEFT|wx.ALL|wx.EXPAND, 10 )
+		sz_Directory.Add( self.ch_Directory, 1, wx.ALIGN_CENTER_VERTICAL|wx.RIGHT, 10 )
 		
-		self.bt_SelectDir = wx.Button( self.m_panel3, wx.ID_ANY, u"Select", wx.DefaultPosition, wx.DefaultSize, 0 )
-		bSizer3.Add( self.bt_SelectDir, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALIGN_RIGHT|wx.ALL, 10 )
+		self.bt_SelectDir = wx.Button( self.pn_Directory, wx.ID_ANY, u"Select", wx.DefaultPosition, wx.DefaultSize, 0 )
+		sz_Directory.Add( self.bt_SelectDir, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALIGN_RIGHT|wx.RIGHT, 10 )
 		
 		
-		self.m_panel3.SetSizer( bSizer3 )
-		self.m_panel3.Layout()
-		bSizer3.Fit( self.m_panel3 )
-		bSizer7.Add( self.m_panel3, 0, wx.EXPAND |wx.ALL, 0 )
+		self.pn_Directory.SetSizer( sz_Directory )
+		self.pn_Directory.Layout()
+		sz_Directory.Fit( self.pn_Directory )
+		sz_Main.Add( self.pn_Directory, 0, wx.EXPAND |wx.ALL, 0 )
 		
-		self.pn_Main = wx.Panel( self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL )
-		gSizer2 = wx.GridSizer( 4, 4, 0, 0 )
+		self.pn_Author = wx.Panel( self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL )
+		sz_Author = wx.BoxSizer( wx.HORIZONTAL )
 		
-		self.st_Version = wx.StaticText( self.pn_Main, wx.ID_ANY, u"Version:", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.st_Author = wx.StaticText( self.pn_Author, wx.ID_ANY, u"Author:", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.st_Author.Wrap( -1 )
+		
+		sz_Author.Add( self.st_Author, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALL, 10 )
+		
+		self.et_Author = wx.TextCtrl( self.pn_Author, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.Size( -1,-1 ), 0 )
+		sz_Author.Add( self.et_Author, 1, wx.ALIGN_CENTER_VERTICAL|wx.RIGHT, 10 )
+		
+		
+		self.pn_Author.SetSizer( sz_Author )
+		self.pn_Author.Layout()
+		sz_Author.Fit( self.pn_Author )
+		sz_Main.Add( self.pn_Author, 1, wx.EXPAND |wx.ALL, 0 )
+		
+		self.pn_Info = wx.Panel( self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL )
+		sz_Info = wx.GridSizer( 4, 4, 0, 0 )
+		
+		self.st_Version = wx.StaticText( self.pn_Info, wx.ID_ANY, u"Version:", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.st_Version.Wrap( -1 )
 		
-		gSizer2.Add( self.st_Version, 0, wx.ALIGN_CENTER_VERTICAL|wx.LEFT, 10 )
+		sz_Info.Add( self.st_Version, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALIGN_LEFT|wx.ALL, 10 )
 		
-		self.et_Version = wx.TextCtrl( self.pn_Main, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
-		gSizer2.Add( self.et_Version, 1, wx.ALIGN_CENTER_VERTICAL|wx.ALL|wx.EXPAND, 5 )
+		self.et_Version = wx.TextCtrl( self.pn_Info, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
+		sz_Info.Add( self.et_Version, 1, wx.ALIGN_CENTER_VERTICAL|wx.ALIGN_LEFT, 5 )
 		
-		self.st_VersionPrev = wx.StaticText( self.pn_Main, wx.ID_ANY, u"[version]", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.st_VersionPrev = wx.StaticText( self.pn_Info, wx.ID_ANY, u"[version]", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.st_VersionPrev.Wrap( -1 )
 		
-		gSizer2.Add( self.st_VersionPrev, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALL, 5 )
+		sz_Info.Add( self.st_VersionPrev, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALL, 5 )
 		
-		self.bt_IncVersion = wx.Button( self.pn_Main, wx.ID_ANY, u"Incr.Version", wx.DefaultPosition, wx.DefaultSize, 0 )
-		gSizer2.Add( self.bt_IncVersion, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALIGN_RIGHT|wx.ALL, 7 )
+		self.bt_IncVersion = wx.Button( self.pn_Info, wx.ID_ANY, u"Incr. Version", wx.DefaultPosition, wx.DefaultSize, 0 )
+		sz_Info.Add( self.bt_IncVersion, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALIGN_RIGHT|wx.ALL, 10 )
 		
-		self.st_Build = wx.StaticText( self.pn_Main, wx.ID_ANY, u"Build:", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.st_Build = wx.StaticText( self.pn_Info, wx.ID_ANY, u"Build:", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.st_Build.Wrap( -1 )
 		
-		gSizer2.Add( self.st_Build, 0, wx.ALIGN_CENTER_VERTICAL|wx.LEFT, 10 )
+		sz_Info.Add( self.st_Build, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALIGN_LEFT|wx.ALL, 10 )
 		
-		self.et_Build = wx.TextCtrl( self.pn_Main, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
-		gSizer2.Add( self.et_Build, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALL|wx.EXPAND, 5 )
+		self.et_Build = wx.TextCtrl( self.pn_Info, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
+		sz_Info.Add( self.et_Build, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALIGN_LEFT, 5 )
 		
-		self.st_BuildPrev = wx.StaticText( self.pn_Main, wx.ID_ANY, u"[build]", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.st_BuildPrev = wx.StaticText( self.pn_Info, wx.ID_ANY, u"[build]", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.st_BuildPrev.Wrap( -1 )
 		
-		gSizer2.Add( self.st_BuildPrev, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALL, 5 )
+		sz_Info.Add( self.st_BuildPrev, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALL, 5 )
 		
 		
-		gSizer2.Add( ( 0, 0), 1, wx.EXPAND, 5 )
+		sz_Info.Add( ( 0, 0), 1, wx.EXPAND, 5 )
 		
-		self.st_Created = wx.StaticText( self.pn_Main, wx.ID_ANY, u"Created:", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.st_Created = wx.StaticText( self.pn_Info, wx.ID_ANY, u"Created:", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.st_Created.Wrap( -1 )
 		
-		gSizer2.Add( self.st_Created, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALL, 10 )
+		sz_Info.Add( self.st_Created, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALIGN_LEFT|wx.ALL, 10 )
 		
-		self.et_Created = wx.TextCtrl( self.pn_Main, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
-		gSizer2.Add( self.et_Created, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALL|wx.EXPAND, 5 )
+		self.et_Created = wx.TextCtrl( self.pn_Info, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
+		sz_Info.Add( self.et_Created, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALIGN_LEFT, 5 )
 		
-		self.st_CreatedPrev = wx.StaticText( self.pn_Main, wx.ID_ANY, u"[created]", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.st_CreatedPrev = wx.StaticText( self.pn_Info, wx.ID_ANY, u"[created]", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.st_CreatedPrev.Wrap( -1 )
 		
-		gSizer2.Add( self.st_CreatedPrev, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALL, 5 )
+		sz_Info.Add( self.st_CreatedPrev, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALL, 5 )
 		
 		
-		gSizer2.Add( ( 0, 0), 1, wx.EXPAND, 5 )
+		sz_Info.Add( ( 0, 0), 1, wx.EXPAND, 5 )
 		
-		self.bt_Set = wx.Button( self.pn_Main, wx.ID_ANY, u"Set", wx.DefaultPosition, wx.DefaultSize, 0 )
-		gSizer2.Add( self.bt_Set, 0, wx.ALIGN_CENTER_VERTICAL|wx.LEFT, 10 )
+		self.bt_Set = wx.Button( self.pn_Info, wx.ID_ANY, u"Set", wx.DefaultPosition, wx.DefaultSize, 0 )
+		sz_Info.Add( self.bt_Set, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALIGN_LEFT|wx.ALL, 10 )
 		
-		self.bt_Revert = wx.Button( self.pn_Main, wx.ID_ANY, u"Revert", wx.DefaultPosition, wx.DefaultSize, 0 )
-		gSizer2.Add( self.bt_Revert, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALIGN_LEFT|wx.ALL, 5 )
-		
-		
-		gSizer2.Add( ( 0, 0), 1, wx.ALIGN_CENTER_VERTICAL|wx.EXPAND, 5 )
+		self.bt_Revert = wx.Button( self.pn_Info, wx.ID_ANY, u"Revert", wx.DefaultPosition, wx.DefaultSize, 0 )
+		sz_Info.Add( self.bt_Revert, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALIGN_LEFT|wx.ALL|wx.LEFT, 5 )
 		
 		
-		gSizer2.Add( ( 0, 0), 1, wx.ALIGN_CENTER_VERTICAL|wx.EXPAND, 5 )
+		sz_Info.Add( ( 0, 0), 1, wx.ALIGN_CENTER_VERTICAL|wx.EXPAND, 5 )
 		
 		
-		self.pn_Main.SetSizer( gSizer2 )
-		self.pn_Main.Layout()
-		gSizer2.Fit( self.pn_Main )
-		bSizer7.Add( self.pn_Main, 1, wx.EXPAND|wx.LEFT, 0 )
+		sz_Info.Add( ( 0, 0), 1, wx.ALIGN_CENTER_VERTICAL|wx.EXPAND, 5 )
+		
+		
+		self.pn_Info.SetSizer( sz_Info )
+		self.pn_Info.Layout()
+		sz_Info.Fit( self.pn_Info )
+		sz_Main.Add( self.pn_Info, 1, wx.EXPAND|wx.LEFT, 0 )
 		
 		self.pn_StatusBar = wx.Panel( self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL )
-		bSizer2 = wx.BoxSizer( wx.HORIZONTAL )
+		sz_StatusBar = wx.BoxSizer( wx.HORIZONTAL )
 		
 		self.st_Status = wx.StaticText( self.pn_StatusBar, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.st_Status.Wrap( -1 )
 		
-		bSizer2.Add( self.st_Status, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALL, 5 )
+		sz_StatusBar.Add( self.st_Status, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALL, 5 )
 		
 		
-		self.pn_StatusBar.SetSizer( bSizer2 )
+		self.pn_StatusBar.SetSizer( sz_StatusBar )
 		self.pn_StatusBar.Layout()
-		bSizer2.Fit( self.pn_StatusBar )
-		bSizer7.Add( self.pn_StatusBar, 0, wx.ALL|wx.EXPAND, 0 )
+		sz_StatusBar.Fit( self.pn_StatusBar )
+		sz_Main.Add( self.pn_StatusBar, 0, wx.ALL|wx.EXPAND, 0 )
 		
 		
-		self.SetSizer( bSizer7 )
+		self.SetSizer( sz_Main )
 		self.Layout()
 		
 		self.Centre( wx.BOTH )
