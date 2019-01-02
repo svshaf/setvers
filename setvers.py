@@ -7,8 +7,8 @@
 # Author:       Sergey Shafranskiy <sergey.shafranskiy@gmail.com>
 #
 # Version:      1.1.0
-# Build:        40
-# Created:      2018-12-02
+# Build:        41
+# Created:      2018-12-04
 #  ----------------------------------------------------------------------------
 
 import wx
@@ -38,6 +38,10 @@ CFG_DEF_BUILD = '1'
 INI_SEC_HISTORY = 'History'
 INI_OPT_COUNT = 'Count'
 
+# Max count of directories in history
+
+MAX_DIR_COUNT = 15
+
 
 class MainFrame(setvers_gui.GUIFrame):
     """
@@ -52,16 +56,16 @@ class MainFrame(setvers_gui.GUIFrame):
 
         self.pfname_module = __file__.rsplit(".", 1)[0]  # pathname of running module
 
-        self.path = None
-        self.pfname_vers = None
-        self.pfnames_py = []
+        self.path = None  # Current directory
+        self.pfname_vers = None  # Pathname of the .vers file in current directory
+        self.pfnames_py = []  # List of pathnames of .py files in current directory
 
-        # set window's icon
+        # set application's icon
         icon = wx.Icon(self.pfname_module + ".ico", wx.BITMAP_TYPE_ICO)
         self.SetIcon(icon)
 
         # Read configuration from .ini file
-        self.pfname_ini = self.pfname_module + ".ini"
+        self.pfname_ini = self.pfname_module + ".ini"  # Pathname of .ini file
         self.read_ini()
 
         # Read version info from .vers file from project directory
@@ -69,13 +73,20 @@ class MainFrame(setvers_gui.GUIFrame):
         return
 
     def MainFrame_OnClose(self, event):
-        self.save_ini()
+        """
+        Close window
+
+        :param event:
+        :return:
+        """
+        self.save_ini()  # Save settings
         event.Skip()
         return
 
     def read_ini(self):
         """
         # Read configuration from .ini file
+
         :return:
         """
         ini_cfg = cp.ConfigParser()
@@ -92,10 +103,17 @@ class MainFrame(setvers_gui.GUIFrame):
         return
 
     def save_ini(self):
+        """
+        Save configuration to .ini file
+
+        :return:
+        """
         ini_cfg = cp.ConfigParser()
 
         ini_cfg.add_section(INI_SEC_HISTORY)
         count = self.ch_Directory.GetCount()
+        if count > MAX_DIR_COUNT:
+            count = MAX_DIR_COUNT
         ini_cfg.set(INI_SEC_HISTORY, INI_OPT_COUNT, str(count))
         for i in range(count):
             ini_cfg.set(INI_SEC_HISTORY, str(i), self.ch_Directory.GetString(i))
@@ -108,21 +126,21 @@ class MainFrame(setvers_gui.GUIFrame):
         """
         # Read version info from .vers file in current directory
 
-        :param path: Project directory with .vers file
+        :param path: Path to project directory with .vers file
         :return:
         """
         self.path = path
         self.pfname_vers = os.path.join(self.path, '.vers')
 
         self.pfnames_py = [os.path.abspath(os.path.join(self.path, pfname)) for pfname in os.listdir(self.path)
-                           if
-                           os.path.isfile(os.path.join(self.path, pfname)) and (os.path.splitext(pfname)[1] == '.py')]
+                           if os.path.isfile(os.path.join(self.path, pfname)) and
+                           (os.path.splitext(pfname)[1] == '.py')]
         self.st_Status.SetLabel('{} .py file(s) found in {}'.format(len(self.pfnames_py), self.path))
 
-        self.ver_cfg = cp.ConfigParser()
+        self.ver_cfg = cp.ConfigParser()  # Version config. class instance
         self.ver_cfg.optionxform = str
 
-        if not os.path.exists(self.pfname_vers):
+        if not os.path.exists(self.pfname_vers):  # if .vers file doesn't exists
             # create new .vers file
             self.ver_cfg.add_section(CFG_SEC_CURVERS)
             self.ver_cfg.set(CFG_SEC_CURVERS, CFG_OPT_AUTHOR, CFG_DEF_AUTHOR)
@@ -133,7 +151,7 @@ class MainFrame(setvers_gui.GUIFrame):
             with open(self.pfname_vers, 'w') as cf:
                 self.ver_cfg.write(cf)
         else:
-            self.ver_cfg.read(self.pfname_vers)
+            self.ver_cfg.read(self.pfname_vers)  # load version info from .vers file
 
         author = self.ver_cfg.get(CFG_SEC_CURVERS, CFG_OPT_AUTHOR, fallback=CFG_DEF_AUTHOR)
         vers = self.ver_cfg.get(CFG_SEC_CURVERS, CFG_OPT_VERSION, fallback=CFG_DEF_VERSION)
@@ -152,9 +170,11 @@ class MainFrame(setvers_gui.GUIFrame):
         self.et_Created.SetValue(created_new)
         self.st_CreatedPrev.SetLabel(created)
 
+        #  Regex patterns for replaced strings in .py file header
         self.pc = []
-        self.pc.append(re.compile(r'(^# Name:\s+)(.*?$)', flags=re.MULTILINE | re.S))
-        self.pc.append(re.compile(r'(^# Author:\s+)(.*?$)', flags=re.MULTILINE | re.S))
+        self.pc.append(re.compile(r'(^# Name:\s+)(.*?$)', flags=re.MULTILINE | re.S))  # name of module
+        self.pc.append(re.compile(r'(^# Author:\s+)(.*?$)', flags=re.MULTILINE | re.S))  # author info
+        # version info
         self.pc.append(re.compile(r'(^# Version:\s+)(\d.*?$)', flags=re.MULTILINE | re.S))
         self.pc.append(re.compile(r'(^# Build:\s+)(\d.*?$)', flags=re.MULTILINE | re.S))
         self.pc.append(re.compile(r'(^# Created:\s+)(\d{4}-\d{2}-\d{2}.*?$)', flags=re.MULTILINE | re.S))
@@ -192,7 +212,7 @@ class MainFrame(setvers_gui.GUIFrame):
 
     def bt_SelectDir_OnClick(self, event):
         """
-        Select new project directory
+        Choose new directory
 
         :param event:
         :return:
@@ -219,7 +239,7 @@ class MainFrame(setvers_gui.GUIFrame):
 
     def bt_Set_OnClick(self, event):
         """
-        Save all values
+        Apply new version info to all .py files in current directory
 
         :param event:
         :return:
@@ -232,7 +252,7 @@ class MainFrame(setvers_gui.GUIFrame):
 
     def bt_Revert_OnClick(self, event):
         """
-        Restore previous values
+        Restore previous version info in all .py files in current directory
 
         :param event:
         :return:
@@ -245,7 +265,7 @@ class MainFrame(setvers_gui.GUIFrame):
 
     def update_py_files(self, vals: list):
         """
-        Replace version info in all .py files
+        Update version info in all .py files
 
         :param vals: Values to replace
         :return:
@@ -272,13 +292,13 @@ class MainFrame(setvers_gui.GUIFrame):
 
         self.st_Status.SetLabel('{} .py file(s) updated in {}'.format(len(self.pfnames_py), self.path))
 
-        # Save new values to .ver file
+        # Save new values to .vers file
         self.save_vers()
         return
 
     def bt_IncVersion_OnClick(self, event):
         """
-        Increment last number in version
+        Increment last number ZZ in version XX.YY.ZZ
 
         :param event:
         :return:
